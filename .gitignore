@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+.env
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+
+# Jupyter
+.ipynb_checkpoints/
+
+# ML artifacts (large binaries — use Git LFS or DVC)
+ml/artifacts/models/*.pkl
+ml/artifacts/models/*.joblib
+ml/artifacts/tflite/*.tflite
+ml/data/raw/*.csv
+ml/data/processed/*.csv
+
+# Node
+node_modules/
+.next/
+.vercel/
+
+# PlatformIO
+firmware/.pio/
+firmware/.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets
+.env.local
+.env.production
+supabase/.env
+
+# IDE
+.idea/
+*.swp
