@@ -7,6 +7,7 @@ on:
     branches: [main]
 
 jobs:
+  # ── 1. ML Pipeline Tests ────────────────────────────────────────────────────
   ml-tests:
     name: ML Pipeline Tests
     runs-on: ubuntu-latest
@@ -15,16 +16,18 @@ jobs:
         working-directory: ml
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Install uv
-        run: pip install uv
+
       - name: Install dependencies
-        run: uv pip install --system -r requirements.txt
+        run: pip install numpy pandas scikit-learn xgboost matplotlib seaborn mlflow pytest pytest-cov
+
       - name: Run tests
         run: pytest tests/ -v --cov=src --cov-report=term-missing
 
+  # ── 2. Dashboard Lint & Type Check ─────────────────────────────────────────
   dashboard-lint:
     name: Dashboard Lint & Type Check
     runs-on: ubuntu-latest
@@ -33,13 +36,21 @@ jobs:
         working-directory: dashboard
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - run: npm ci
-      - run: npm run lint
-      - run: npx tsc --noEmit
 
+      - name: Install dependencies
+        run: npm install          # npm install (not ci) — no lockfile required
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+  # ── 3. Firmware Build (PlatformIO) ─────────────────────────────────────────
   firmware-build:
     name: Firmware Build (PlatformIO)
     runs-on: ubuntu-latest
@@ -48,11 +59,14 @@ jobs:
         working-directory: firmware
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/cache@v4
         with:
           path: ~/.platformio
           key: pio-${{ hashFiles('firmware/platformio.ini') }}
+
       - name: Install PlatformIO
         run: pip install platformio
+
       - name: Build firmware
-        run: pio run
+        run: pio run -e esp32dev
